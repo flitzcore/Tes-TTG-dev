@@ -7,7 +7,7 @@ registrationForm?.addEventListener('submit', function (event) {
     const password = document.getElementById('password')?.value;
     const confirmPassword = document.getElementById('password-conf')?.value;
     const errorMessages = document.getElementById('error-message');
-
+    const successMessages = document.getElementById('success-message');
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!username || !email || !password || !confirmPassword) {
         const usernameError = 'Harus mengisi semua bagian';
@@ -26,7 +26,7 @@ registrationForm?.addEventListener('submit', function (event) {
         errorMessages.innerText = confirmPasswordError;
     }
     else {
-        alert('Registration successful!');
+        successMessages.style.display = 'block';
     }
 });
 
