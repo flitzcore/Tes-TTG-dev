@@ -1,4 +1,4 @@
-# Running Project
+# Running Frontend
 Install ```light-server```:
 ``` [bash]
 npm install -g http-server

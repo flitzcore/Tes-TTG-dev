@@ -1,0 +1,12 @@
+#error-message {
+    color: red;
+    margin: 5px;
+}
+
+#success-message {
+    display: none;
+    font-size: 24px;
+    justify-content: center;
+    align-items: center;
+    margin: 20px;
+}

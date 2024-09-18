@@ -1,7 +1,5 @@
 import { getCookie } from './Controller/auth.controller.js';
 
-
-
 const authToken = getCookie('Authorization');
 
 
