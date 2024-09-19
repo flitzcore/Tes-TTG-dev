@@ -99,4 +99,5 @@ console.time('Brute Force');
 console.log(generateExpression([1, 4, 5, 6], 16));
 console.log(generateExpression([1, 4, 5, 6], 18));
 console.log(generateExpression([1, 4, 5, 6], 50));
+console.log(generateExpression([1, 3, 5, 5, 2], 18));
 console.timeEnd('Brute Force');
