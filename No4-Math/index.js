@@ -1,72 +1,107 @@
-function findExpressionWithParentheses(nums, target) {
-    const operators = ['+', '-', '*'];
-    const memo = new Map();
+/*
+Explanation:
 
-    // Helper function for recursive backtracking
-    function backtrack(start, end) {
-        const key = `${start}-${end}`;
-        if (memo.has(key)) return memo.get(key);
+This is brute force way to solve the question. It follow this steps:
+1. Generate all possible permutations of the input numbers.
+2. Generate all possible combinations of operators between the numbers.
+3. Generate all possible combinations of parentheses in the expression. Parentheses always have * before and/or after it because parentheses without * have no effect on the result.
 
-        let results = [];
+To get better performance, we can use dynamic programming to store the results of subproblems and reuse them when needed. But it would take longer to implement, so I stick to this solution.
+*/
+function generatePermutations(arr) {
+    if (arr.length === 1) return [arr];
 
-        // If only one number in the range, return it as a number and a string
-        if (start === end) {
-            return [[nums[start], `${nums[start]}`]];
+    const permutations = [];
+    for (let i = 0; i < arr.length; i++) {
+        const currentNum = arr[i];
+        const remainingNums = arr.slice(0, i).concat(arr.slice(i + 1));
+        const remainingPermutations = generatePermutations(remainingNums);
+
+        for (let perm of remainingPermutations) {
+            permutations.push([currentNum].concat(perm));
         }
+    }
+    return permutations;
+}
 
-        // Try splitting the array at each position
-        for (let i = start; i < end; i++) {
-            const leftResults = backtrack(start, i);
-            const rightResults = backtrack(i + 1, end);
+function evalExpression(expr) {
+    try {
+        return eval(expr);
+    } catch (e) {
+        return null;
+    }
+}
 
-            // Combine left and right results with each operator
-            for (const [leftValue, leftExpr] of leftResults) {
-                for (const [rightValue, rightExpr] of rightResults) {
-                    for (const op of operators) {
-                        let newValue;
-                        let newExpr;
+function generateExpression(nums, target) {
+    const operators = ['+', '-', '*'];
+    const permutations = generatePermutations(nums);
+    for (let perm of permutations) {
 
-                        if (op === '+') {
-                            newValue = leftValue + rightValue;
-                        } else if (op === '-') {
-                            newValue = leftValue - rightValue;
-                        } else if (op === '*') {
-                            newValue = leftValue * rightValue;
-                        }
+        const n = perm.length;
+        const numOperators = n - 1;
+        const operatorCombinations = generateOperatorCombinations(operators, numOperators);
+        for (let operatorCombo of operatorCombinations) {
+            let baseExpression = '' + perm[0];
+            for (let i = 0; i < operatorCombo.length; i++) {
+                baseExpression += operatorCombo[i] + perm[i + 1];
+            }
+            const expressionsWithParentheses = generateParenthesesCombinations(baseExpression);
 
-                        // Add parentheses around the combined expression
-                        newExpr = `(${leftExpr} ${op} ${rightExpr})`;
-
-                        results.push([newValue, newExpr]);
-                    }
+            for (let expression of expressionsWithParentheses) {
+                if (evalExpression(expression) === target) {
+                    return expression;
                 }
             }
         }
-
-        memo.set(key, results);
-        return results;
     }
 
-    // Get all possible expressions from the entire array
-    const allResults = backtrack(0, nums.length - 1);
+    return "No valid expression found.";
+}
 
-    // Find and return the expression that matches the target
-    for (const [value, expr] of allResults) {
-        if (value === target) {
-            return expr;
+function generateOperatorCombinations(operators, numOperators) {
+    if (numOperators === 0) return [''];
+
+    const results = [];
+    for (let op of operators) {
+        const subCombinations = generateOperatorCombinations(operators, numOperators - 1);
+        for (let subCombo of subCombinations) {
+            results.push(op + subCombo);
+        }
+    }
+    return results;
+}
+
+function generateParenthesesCombinations(expression) {
+    const results = [];
+
+    const parts = expression.match(/\d+|\+|\-|\*/g);
+
+    for (let i = 0; i < parts.length - 2; i += 2) {
+        if (parts[i + 1] === '*' || parts[i - 1] === '*') {
+            const exprWith2 = [...parts];
+            exprWith2.splice(i, 0, '(');
+            exprWith2.splice(i + 4, 0, ')');
+            results.push(exprWith2.join(''));
         }
     }
 
-    return null;
+    for (let i = 0; i < parts.length - 4; i += 2) {
+        if (parts[i + 1] === '*' || parts[i + 3] === '*') {
+            const exprWith3 = [...parts];
+            exprWith3.splice(i, 0, '(');
+            exprWith3.splice(i + 6, 0, ')');
+            results.push(exprWith3.join(''));
+        }
+    }
+
+    results.push(expression);
+
+    return results;
 }
 
-// Contoh penggunaan:
-const numbers = [1, 4, 5, 6];
-const target = 18;
-const result = findExpressionWithParentheses(numbers, target);
-
-if (result) {
-    console.log(`Expression: ${result}`);
-} else {
-    console.log("Tidak ditemukan cara untuk mencapai target...");
-}
+// Example usage
+console.time('Brute Force');
+console.log(generateExpression([1, 4, 5, 6], 16));
+console.log(generateExpression([1, 4, 5, 6], 18));
+console.log(generateExpression([1, 4, 5, 6], 50));
+console.timeEnd('Brute Force');
