@@ -8,7 +8,7 @@ docker compose up
 
 # API Endpoint
 
-Use ```Tes-TTG-PostMan.postman_collection.json``` by import to Postman\
+Use ```Tes-TTG-PostMan.postman_collection.json``` by import to Postman
 
 **User routes**:\
 `POST /v1/users` - create a user\
