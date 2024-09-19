@@ -73,24 +73,20 @@ function generateOperatorCombinations(operators, numOperators) {
 
 function generateParenthesesCombinations(expression) {
     const results = [];
-
     const parts = expression.match(/\d+|\+|\-|\*/g);
 
-    for (let i = 0; i < parts.length - 2; i += 2) {
-        if (parts[i + 1] === '*' || parts[i - 1] === '*') {
-            const exprWith2 = [...parts];
-            exprWith2.splice(i, 0, '(');
-            exprWith2.splice(i + 4, 0, ')');
-            results.push(exprWith2.join(''));
-        }
-    }
+    const length = parts.length;
 
-    for (let i = 0; i < parts.length - 4; i += 2) {
-        if (parts[i + 1] === '*' || parts[i + 3] === '*') {
-            const exprWith3 = [...parts];
-            exprWith3.splice(i, 0, '(');
-            exprWith3.splice(i + 6, 0, ')');
-            results.push(exprWith3.join(''));
+    for (let len = 2; len < length; len++) {
+        for (let i = 0; i <= length - len; i += 2) {
+            if (i + len * 2 - 2 < length) {
+                if (i > 0 && parts[i - 1] === '*' || i + len * 2 < length && parts[i + len * 2] === '*') {
+                    const exprWithParentheses = [...parts];
+                    exprWithParentheses.splice(i, 0, '(');
+                    exprWithParentheses.splice(i + len * 2 + 1, 0, ')');
+                    results.push(exprWithParentheses.join(''));
+                }
+            }
         }
     }
 
@@ -99,7 +95,6 @@ function generateParenthesesCombinations(expression) {
     return results;
 }
 
-// Example usage
 console.time('Brute Force');
 console.log(generateExpression([1, 4, 5, 6], 16));
 console.log(generateExpression([1, 4, 5, 6], 18));
